@@ -53,12 +53,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "rest_framework",
-    "rest_framework_simplejwt",
-    "corsheaders",
-    "apps.core",
-    "apps.products",
-    "apps.alerts",
+    'drf_yasg',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    'apps.core',
+    'apps.products',
+    'apps.alerts'
 ]
 
 APP_MODULES = [x for x in INSTALLED_APPS if x.startswith("apps")]

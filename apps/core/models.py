@@ -1,6 +1,5 @@
 import uuid
 from django.db import models
-from django.utils import timezone
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 
@@ -68,6 +67,19 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     first_name = models.CharField(verbose_name="FirstName", max_length=30, blank=True)
     last_name = models.CharField(verbose_name="Last Name", max_length=150, blank=True)
 
+    is_active = models.BooleanField(
+        "active",
+        default=True,
+        help_text=
+        "Designates whether this user should be treated as active. "
+        "Unselect this instead of deleting accounts."
+        ,
+    )
+    is_staff = models.BooleanField(
+        "staff status",
+        default=False,
+        help_text="Designates whether the user can log into this admin site.",
+    )
     objects = UserManager()
 
     USERNAME_FIELD = "email"

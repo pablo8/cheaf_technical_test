@@ -17,9 +17,27 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+from rest_framework import permissions
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
-from apps.core.routers import core_router
+from apps.core.routers import core_router, nested_router
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Cheaf Test Tecnico API",
+        default_version="v1",
+        description="Documentación de las APIS con DRF y Swagger",
+        terms_of_service="",
+        contact=openapi.Contact(email="a@a.com"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
 urlpatterns = [
     # JWT
     path('auth/token/', TokenObtainPairView.as_view(), name="token_obtain_pair"),  # Obtener access + refresh token
@@ -27,6 +45,11 @@ urlpatterns = [
     path('auth/token/verify/', TokenVerifyView.as_view(), name="token_verify"),  # Verificar si un token es válido
     # Admin
     path('admin/', admin.site.urls),
-    # User
+    # Core routers
     path('core/', include(core_router.urls)),
+    # Nested routers
+    path('core/', include(nested_router.urls)),
+    # Swagger
+    path("docs/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
+
 ]
