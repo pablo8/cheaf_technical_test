@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
     'drf_yasg',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -224,3 +225,21 @@ CACHES = {
         }
     }
 }
+
+# CELERY CONFIGURATION
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+# EMAIL CONFIGURATION --> Utilizo un server fake de correos para evitar tener hacer configuracion
+# en google u otro servidor de correos a efectos del análisis técnico del proyecto
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "localhost"
+EMAIL_PORT = 1025
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+
