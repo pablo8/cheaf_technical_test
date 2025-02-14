@@ -23,10 +23,12 @@ class AlertViewSet(
     mixins.UpdateModelMixin,
     GenericViewSet
 ):
-    queryset = Alert.objects.all()
     serializer_class = AlertSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = AlertFilter
+
+    def get_queryset(self):
+        return Alert.objects.all().select_related('product')
 
     def update(self, request, *args, **kwargs):
         try:
