@@ -1,7 +1,9 @@
 from django.db import models
 
+from apps.core.models import BaseModel
 
-class Product(models.Model):
+
+class Product(BaseModel):
     name = models.CharField(max_length=100, blank=True, null=True)
     description = models.CharField(max_length=100, blank=True, null=True)
     stock = models.IntegerField(default=0)

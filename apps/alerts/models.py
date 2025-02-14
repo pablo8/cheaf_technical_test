@@ -1,12 +1,13 @@
 from django.db import models
 from django.utils.timezone import now
 
+from apps.core.models import BaseModel
 from apps.products.models import Product
 
 from utils.constants import STATUS_ACTIVE_ID, ALERT_STATUSES, STATUS_EXPIRED_ID
 
 
-class Alert(models.Model):
+class Alert(BaseModel):
     status = models.IntegerField(choices=ALERT_STATUSES, default=STATUS_ACTIVE_ID)
     activation_date = models.DateTimeField(blank=True, null=True, db_index=True)
     days_to_activation = models.IntegerField(blank=True, null=True, db_index=True)

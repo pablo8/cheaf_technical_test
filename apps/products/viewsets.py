@@ -3,7 +3,6 @@ import sys
 from dateutil.relativedelta import relativedelta
 from django.db import transaction
 from django.db.models import Count, Q
-from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -50,9 +49,6 @@ class ProductViewSet(
                         {"result": "ERROR", "detail": "format error, expiration_date format is dd/mm/yyyy hh:mm!"},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-
-                if timezone.is_naive(expiration_date):
-                    expiration_date = timezone.make_aware(expiration_date, timezone.get_current_timezone())
 
                 product = Product.objects.create(
                     name=name,
@@ -111,9 +107,6 @@ class ProductViewSet(
                         {"result": "ERROR", "detail": "format error, expiration_date format is dd/mm/yyyy hh:mm!"},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-
-                if timezone.is_naive(expiration_date):
-                    expiration_date = timezone.make_aware(expiration_date, timezone.get_current_timezone())
 
                 product = Product.objects.get(id=kwargs["pk"])
                 product.name = name

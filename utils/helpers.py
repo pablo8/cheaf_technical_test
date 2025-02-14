@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pytz
 from dateutil.relativedelta import relativedelta
 
 
@@ -12,7 +13,7 @@ def convert_str_to_datetime(s):
     """
     for fmt in ("%d/%m/%Y %H:%M", "%d/%m/%y %H:%M"):
         try:
-            return datetime.strptime(s, fmt)
+            return datetime.strptime(s, fmt).astimezone(pytz.UTC)
         except ValueError:
             continue
     return None
