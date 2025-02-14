@@ -1,6 +1,8 @@
+# Importación de terceros
 from rest_framework import pagination
 from rest_framework.response import Response
 
+# Importación de modulos internos
 from cheaf_test_tecnico.settings import DEBUG
 
 

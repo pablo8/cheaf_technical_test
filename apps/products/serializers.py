@@ -1,8 +1,6 @@
-import datetime
-
 from rest_framework import serializers
 
-from apps.alerts.serializers import AlertSerializer
+from apps.alerts.serializers import AlertLiteSerializer
 from apps.products.models import Product
 from utils.helpers import output_date_format
 
@@ -18,7 +16,7 @@ class ProductSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_alerts(obj):
         try:
-            return AlertSerializer(instance=obj.alert_set.all(), many=True).data
+            return AlertLiteSerializer(instance=obj.alert_set.all(), many=True).data
         except:
             return None
 

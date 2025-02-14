@@ -1,6 +1,7 @@
+# Importación de terceros
 import django_filters
 from django_filters import filters
-
+# Importaciones de modulos internos del proyecto
 from apps.alerts.models import Alert
 
 

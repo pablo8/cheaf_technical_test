@@ -1,5 +1,8 @@
-from apps.alerts.models import Alert
+# Importación de terceros
 from django.contrib import admin
+
+# Importaciones de modulos internos del proyecto
+from apps.alerts.models import Alert
 
 
 @admin.register(Alert)

@@ -1,10 +1,12 @@
+# Importación de terceros
 from django.db import models
 from django.utils.timezone import now
 
+# Importaciones de modulos internos del proyecto
 from apps.core.models import BaseModel
 from apps.products.models import Product
 
-from utils.constants import STATUS_ACTIVE_ID, ALERT_STATUSES, STATUS_EXPIRED_ID
+from utils.constants import STATUS_ACTIVE_ID, ALERT_STATUSES
 
 
 class Alert(BaseModel):
@@ -21,9 +23,7 @@ class Alert(BaseModel):
             activation_date = self.activation_date.date()
             self.days_to_activation = (activation_date - today).days if activation_date > today else 0
             self.days_since_activation = (today - activation_date).days if activation_date <= today else 0
-            # update alert status
-            # if today >= activation_date:
-            #     self.status = STATUS_EXPIRED_ID
+
         else:
             self.days_to_activation = None
             self.days_since_activation = None

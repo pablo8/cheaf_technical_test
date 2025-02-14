@@ -1,22 +1,23 @@
 import sys
 
-from dateutil.relativedelta import relativedelta
+# Importación de terceros
 from django.db import transaction
-from django.db.models import Count, Q
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status
-from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+# Importaciones de modulos internos del proyecto
+from apps.alerts.filters import AlertFilter
 from apps.alerts.models import Alert
 from apps.alerts.serializers import AlertSerializer
-from apps.alerts.filters import AlertFilter
 from utils.helpers import convert_str_to_datetime
+from utils.mixins import CachedViewMixin
 
 
 class AlertViewSet(
+    CachedViewMixin,
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
     mixins.UpdateModelMixin,

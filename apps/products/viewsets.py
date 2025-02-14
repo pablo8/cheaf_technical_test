@@ -1,8 +1,11 @@
 import sys
+# Si los datos son simples (dict, list, str), usa json o cache.set().
+# Si se necesita almacenar objetos más complejos, usar pickle.
+import pickle
 
 from dateutil.relativedelta import relativedelta
 from django.db import transaction
-from django.db.models import Count, Q
+from django.core.cache import cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -14,10 +17,12 @@ from apps.products.filters import ProductFilter
 from apps.products.models import Product
 from apps.products.serializers import ProductSerializer
 from utils.constants import STATUS_EXPIRED_ID, STATUS_ACTIVE_ID
-from utils.helpers import convert_str_to_datetime, calculate_activation_dates, get_start_end_dates
+from utils.helpers import convert_str_to_datetime, calculate_activation_dates
+from utils.mixins import CachedViewMixin
 
 
 class ProductViewSet(
+    CachedViewMixin,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
@@ -162,19 +167,20 @@ class ProductViewSet(
 
     @action(methods=["get"], detail=False, url_path="expiring")
     def expiring(self, request, *args, **kwargs):
+        """
+                  Se consideran el estado de expirado cuando al menos una de las alertas fue activada
+                  caché ahora es gestionada automáticamente por CachedViewMixin.
+                  """
         try:
-            """
-            Se consideran el estado de expirado cuando las dos alertas fueron activadas
-            """
-            expired_products = Product.objects.annotate(
-                expired_alerts=Count('alert',
-                filter=Q(alert__status=STATUS_EXPIRED_ID))
-            ).filter(expired_alerts=2)
+            expired_products = Product.objects.with_at_least_one_expired_alert()
+            page = self.paginate_queryset(expired_products)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
 
-            return Response(
-                self.get_serializer(expired_products, many=True).data,
-                status=status.HTTP_200_OK
-            )
+            serializer = self.get_serializer(expired_products, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as ex:
             return Response(
