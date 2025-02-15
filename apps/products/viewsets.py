@@ -6,6 +6,7 @@ import pickle
 from dateutil.relativedelta import relativedelta
 from django.db import transaction
 from django.core.cache import cache
+from django.utils.timezone import now
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -52,6 +53,12 @@ class ProductViewSet(
                 if expiration_date is None:
                     return Response(
                         {"result": "ERROR", "detail": "format error, expiration_date format is dd/mm/yyyy hh:mm!"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                if expiration_date < now():
+                    return Response(
+                        {"result": "ERROR", "detail": "La fecha de expiración no puede estar en el pasado"},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
@@ -110,6 +117,12 @@ class ProductViewSet(
                 if expiration_date is None:
                     return Response(
                         {"result": "ERROR", "detail": "format error, expiration_date format is dd/mm/yyyy hh:mm!"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                if expiration_date < now():
+                    return Response(
+                        {"result": "ERROR", "detail": "La fecha de expiración no puede estar en el pasado"},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 

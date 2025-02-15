@@ -16,6 +16,9 @@ class Alert(BaseModel):
     days_since_activation = models.IntegerField(blank=True, null=True, db_index=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"Alerta para {self.product.name} - {self.activation_date.strftime('%d/%m/%Y')}"
+
     def update_days(self):
         """Método para actualizar los días basados en la fecha de activación"""
         if self.activation_date:
