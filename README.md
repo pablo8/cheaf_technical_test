@@ -583,18 +583,95 @@ celery -A apps.core worker --pool=solo --loglevel=info
 
 ---
 
-### **🔥 Resumen de Nuevas Funcionalidades**
-✅ **Configuración de Mailhog como servidor de pruebas SMTP.**  
-✅ **Tarea de Celery para enviar notificaciones de alertas por vencer.**  
-✅ **Pruebas manuales de Celery con `call` y revisión en Mailhog.**  
-✅ **Ejecución automática de la tarea con Celery Beat cada 24 horas.**  
+## **🛠️ Pruebas Unitarias con Pytest**
+
+Para garantizar la estabilidad del código, se han implementado **pruebas unitarias** con **pytest**.  
+Las pruebas están ubicadas en la carpeta de cada aplicación (`apps/products/tests.py`, `apps/alerts/tests.py`, etc.).
+
+### **📌 Configuración de Pytest**
+
+1. **Instalar pytest y pytest-django**  
+   Asegúrate de que estas dependencias estén instaladas:
+   ```bash
+   pip install pytest pytest-django
+   ```
+   
+2. **Archivo de configuración `pytest.ini`**  
+   Para que pytest reconozca Django, agrega un archivo `pytest.ini` en la raíz del proyecto:
+   ```ini
+   [pytest]
+   DJANGO_SETTINGS_MODULE = cheaf_test_tecnico.settings
+   python_files = tests.py test_*.py *_tests.py
+   ```
+
+3. **Configuración de `conftest.py`**  
+   En la raíz del proyecto, crea un archivo `conftest.py` para inicializar Django antes de ejecutar pruebas:
+   ```python
+   import os
+   import django
+
+   def pytest_configure():
+       """Configura Django antes de ejecutar cualquier test"""
+       os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cheaf_test_tecnico.settings')
+       django.setup()
+   ```
+
+### **📌 Cómo Ejecutar las Pruebas**
+Ejecutar todas las pruebas:
+```bash
+pytest
+```
+Ejecutar pruebas en una aplicación específica (`products`):
+```bash
+pytest apps/products/
+```
+Ejecutar un solo archivo de prueba:
+```bash
+pytest apps/products/tests.py
+```
+Ejecutar una prueba específica dentro de un archivo:
+```bash
+pytest apps/products/tests.py::test_nombre_funcion
+```
+Ejecutar pruebas con información detallada:
+```bash
+pytest -v
+```
+Ejecutar pruebas y generar reporte de cobertura:
+```bash
+pytest --cov=apps
+```
+
+### **📌 Estructura de los Tests**
+Cada aplicación tiene su propio archivo `tests.py` con pruebas unitarias:
+```
+apps/
+│── products/
+│   ├── models.py
+│   ├── views.py
+│   ├── tests.py  <-- Pruebas unitarias de productos
+│── alerts/
+│   ├── models.py
+│   ├── views.py
+│   ├── tests.py  <-- Pruebas unitarias de alertas
+```
+
+### **📌 Qué Pruebas Se Implementaron**
+1. **Pruebas de `Product`:**
+   - Creación de productos.
+   - Validación de fechas de expiración.
+   - Relaciones con alertas.
+   - Pruebas de métodos personalizados en `ProductManager`.
+
+2. **Pruebas de `Alert`:**
+   - Creación de alertas.
+   - Cálculo de `days_to_activation` y `days_since_activation`.
+   - Cambio de estado cuando una alerta vence (`STATUS_EXPIRED_ID`).
+   - Envío de notificaciones cuando un producto está por caducar.
 
 ---
 
-🚀 **Dale una prueba y dime si necesitas algún ajuste!**
-
 ## **Próximos Pasos**
-✅ Implementar **CRONJOB** para calcular los días restantes y pasados de la alerta.  
 ✅ **Dockerización** del proyecto.  
 ✅ Configurar **CI/CD** para automatizar despliegues (definir servidor web).  
 
