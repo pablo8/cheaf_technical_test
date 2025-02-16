@@ -19,10 +19,18 @@ if platform.system() == "Windows":
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    "update-alerts-every-24h": {
+    "update-alerts-every-5min": {
         "task": "apps.alerts.tasks.update_alerts",
         "schedule": crontab(minute=0, hour=0),  # Análogo en linux 0 0 * * * /ruta/al/tarea (todas las medias noche)
     },
+    "update-expiration-product-every-5min": {
+        "task": "apps.alerts.tasks.notify_products_before_expiration",
+        "schedule": crontab(minute=0, hour=0),  # Análogo en linux 0 0 * * * /ruta/al/tarea (todas las medias noche)
+    },
+    # "update-simulator-every-5min": {
+    #     "task": "apps.alerts.tasks.simulate_notifications",
+    #     "schedule": crontab(minute="*/5"),  # Análogo en linux */5 * * * * /ruta/al/tarea (todas las medias noche)
+    # },
 }
 
 app.conf.update(

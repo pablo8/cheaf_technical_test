@@ -4,6 +4,7 @@ from django.utils.timezone import now
 
 from apps.core.models import BaseModel
 from apps.products.managers import ProductManager
+from utils.constants import STATUS_EXPIRED_ID
 
 
 class Product(BaseModel):

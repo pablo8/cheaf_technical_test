@@ -26,8 +26,8 @@ config = dotenv_values(BASE_DIR / ".env")
 SECRET_KEY = config["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
+USING_DOCKER_CONFIG = True
+DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # Define una lista de dominios en los que django "confía" para recibir solicitudes que incluyen
@@ -151,12 +151,20 @@ WSGI_APPLICATION = 'cheaf_test_tecnico.wsgi.application'
 CLIENT_NAME = config["CLIENT_NAME"]
 
 # Database Configuration (Usando valores por defecto en caso de que no existan en el .env)
-DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.postgresql")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "cheaf")
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "dba")
-DB_HOST = os.getenv("DB_HOST", "db")
+if USING_DOCKER_CONFIG:
+    DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.postgresql")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DB_NAME = os.getenv("DB_NAME", "cheaf")
+    DB_USER = os.getenv("DB_USER", "postgres")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "dba")
+    DB_HOST = os.getenv("DB_HOST", "db")
+else:
+    DB_ENGINE = config["DB_ENGINE"]
+    DB_PORT = config["DB_PORT"]
+    DB_NAME = config["DB_NAME"]
+    DB_USER = config["DB_USER"]
+    DB_PASSWORD = config["DB_PASSWORD"]
+    DB_HOST = config["DB_HOST"]
 
 DATABASES = {
        "default": {
@@ -205,14 +213,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 # STATIC FILES
+# Archivos estáticos
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "static"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-STATICFILES_DIRS = [
-    BASE_DIR / "staticfiles"
-]
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # MEDIA FILES
 MEDIA_URL = "/media/"
@@ -234,11 +240,15 @@ CACHES = {
 }
 
 # CELERY CONFIGURATION
+if USING_DOCKER_CONFIG:
+    CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
+    CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
+else:
+    CELERY_BROKER_URL = "redis://localhost:6379/0"
+    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
-CELERY_ACCEPT_CONTENT = [os.getenv("CELERY_ACCEPT_CONTENT", 'json')]
-CELERY_TASK_SERIALIZER = os.getenv("CELERY_TASK_SERIALIZER", 'json')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
 # EMAIL CONFIGURATION --> Utilizo un server fake de correos para evitar tener hacer configuracion
 # en google u otro servidor de correos a efectos del análisis técnico del proyecto
@@ -250,3 +260,5 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
 
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

@@ -14,7 +14,7 @@ class Alert(BaseModel):
     activation_date = models.DateTimeField(blank=True, null=True, db_index=True)
     days_to_activation = models.IntegerField(blank=True, null=True, db_index=True)
     days_since_activation = models.IntegerField(blank=True, null=True, db_index=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="alerts")
 
     def __str__(self):
         return f"Alerta para {self.product.name} - {self.activation_date.strftime('%d/%m/%Y')}"

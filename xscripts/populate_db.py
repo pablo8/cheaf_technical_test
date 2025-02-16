@@ -72,7 +72,7 @@ def generate_products_and_alerts(n, d_today, expiration_dates_range):
                 days_to_activation = (activation_date_only - d_today).days if activation_date_only > d_today else 0
                 days_since_activation = (d_today - activation_date_only).days if activation_date_only <= d_today else 0
 
-                status = STATUS_ACTIVE_ID if activation_date_only >= d_today else STATUS_EXPIRED_ID
+                status = STATUS_ACTIVE_ID
                 alerts.append(Alert(
                     status=status,
                     activation_date=activation_date,
@@ -100,28 +100,10 @@ def main():
         datetime(2025, 2, 1, 12, 0, 0, tzinfo=pytz.UTC),
         datetime(2025, 2, 15, 12, 0, 0, tzinfo=pytz.UTC)
     ]
-    # x = 1 Representa status de alertas activas
-    # x = 2 Representa status de alertas expiradas
-    # x = 3 Representa status de alertas mitad activas y mitad expiradas
-    x = 1  # El while es para evitar correlo manualmente
-    while x <= 3:
-        if x == 1:
-            # Alert active status
-            date_today = datetime(2025, 1, 15, 12, 0, 0, tzinfo=pytz.UTC).date()
-            msg = 'activas'
-        elif x == 2:
-            # Alert expired status
-            date_today = datetime(2025, 2, 16, 12, 0, 0, tzinfo=pytz.UTC).date()
-            msg = 'expiradas'
-        else:
-            # Alert active and expired (mixin)
-            date_today = datetime(2025, 2, 7, 12, 0, 0, tzinfo=pytz.UTC).date()
-            msg = 'mezcladas'
 
-        print(f"Insertando {n_product} productos con alertas {msg}")
-        generate_products_and_alerts(n_product, date_today, range_date)
-        x += 1
-
+    date_today = datetime(2025, 1, 15, 12, 0, 0, tzinfo=pytz.UTC).date()
+    print(f"Insertando {n_product} productos con alertas")
+    generate_products_and_alerts(n_product, date_today, range_date)
     print("Base de datos cargada con éxito.")
 
 

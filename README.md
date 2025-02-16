@@ -860,6 +860,30 @@ Con esta configuración, puedes levantar y probar la aplicación en cualquier en
 ### ✅ **¡Listo!**
 Con esto, tienes toda la información para **construir, ejecutar y depurar** tu proyecto en Docker. 🚀
 
+¡Gracias por la aclaración! 🎯 **Estás haciendo un flujo manual para probar la simulación localmente** debido a la configuración de Redis en Docker Desktop. Voy a resumirlo bien para que quede documentado correctamente. 🚀
+
+---
+
+## ✅ **Proceso Manual para Probar la Simulación en Local con Redis en Docker**
+Si estás ejecutando **Redis en Docker Desktop**, no puedes ejecutar Celery desde la consola sin conflictos. Por eso, sigues este flujo:
+
+### 🔹 **Pasos para Probar la Simulación Localmente**
+```sh
+1. python xscripts/clean_db.py         # Limpia la base de datos
+2. python xscripts/populate_db.py      # Población inicial de datos
+3. docker start redis-server           # Inicia Redis dentro de Docker
+4. celery -A apps.core worker --pool=solo --loglevel=info  # Inicia Celery Worker
+5. celery -A apps.core call apps.alerts.tasks.simulate_notifications  # Lanza la simulación
+```
+---
+### 🔹 **Para Finalizar el Worker y Limpiar Redis**
+```sh
+6. celery -A apps.core purge           # Limpia la cola de tareas en Celery
+7. Repetir los pasos (1 y 2) para reiniciar la base de datos antes de una nueva prueba
+```
+
+---
+
 ## **Próximos Pasos** 
 ✅ Configurar **CI/CD** para automatizar despliegues (definir servidor web).  
 
