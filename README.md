@@ -671,8 +671,196 @@ apps/
 
 ---
 
-## **Próximos Pasos**
-✅ **Dockerización** del proyecto.  
+Aquí tienes la sección de **Docker** lista para agregar al README. Está formateada en **Markdown** para que puedas copiarla y pegarla directamente.
+
+---
+
+## 🚀 **Dockerización del Proyecto**
+
+Este proyecto está **dockerizado** para facilitar la configuración y despliegue. Con **Docker Compose**, puedes levantar toda la aplicación (Django, PostgreSQL, Redis, Celery, Nginx, MailHog) en cuestión de segundos.
+
+---
+
+### 🛠 **1. Requisitos Previos**
+Antes de comenzar, asegúrate de tener instalado:
+
+- **[Docker Desktop](https://www.docker.com/products/docker-desktop)**
+- **[Docker Compose](https://docs.docker.com/compose/)** (Incluido en Docker Desktop)
+
+---
+
+### 🏗 **2. Construcción de los Contenedores**
+Para construir los contenedores y preparar la aplicación, ejecuta:
+
+```sh
+docker-compose build
+```
+
+---
+
+### 🚀 **3. Levantar el Proyecto**
+Una vez construidos los contenedores, inicia la aplicación con:
+
+```sh
+docker-compose up -d
+```
+
+Esto iniciará los siguientes servicios:
+- **web** → Contenedor con Django y Gunicorn.
+- **db** → PostgreSQL como base de datos.
+- **redis** → Cache y cola de tareas para Celery.
+- **celery_worker** → Procesador de tareas en segundo plano.
+- **nginx** → Servidor de archivos estáticos y proxy reverso.
+- **mailhog** → Servidor de pruebas para emails.
+
+---
+
+### 📌 **4. Verificar que Todo Funciona**
+Puedes verificar los contenedores corriendo con:
+
+```sh
+docker ps
+```
+
+También puedes ver los logs de un contenedor específico, por ejemplo, de **web**:
+
+```sh
+docker-compose logs web
+```
+
+---
+
+### 🛠 **5. Ejecutar Migraciones y Crear un Superusuario**
+Antes de poder usar la aplicación, debes aplicar las migraciones y crear un superusuario.
+
+#### **Aplicar Migraciones**
+```sh
+docker-compose exec web python manage.py migrate
+```
+
+#### **Crear un Superusuario**
+```sh
+docker-compose exec web python manage.py createsuperuser
+```
+
+Sigue las instrucciones en pantalla para configurar el usuario administrador.
+
+---
+
+### 🛑 **6. Apagar el Proyecto**
+Para detener la ejecución de los contenedores sin eliminarlos:
+
+```sh
+docker-compose down
+```
+
+Si quieres eliminar completamente los contenedores, volúmenes y datos:
+
+```sh
+docker-compose down -v
+```
+
+---
+
+### 🛠 **7. Reconstruir un Servicio Específico**
+Si necesitas reconstruir solo un servicio (por ejemplo, el de Django):
+
+```sh
+docker-compose build web
+docker-compose up -d web
+```
+
+---
+
+### 📂 **Estructura de Volúmenes**
+Los datos de la base de datos y los archivos estáticos se almacenan en volúmenes para persistencia:
+
+- PostgreSQL → `postgres_data`
+- Archivos estáticos → `static_volume`
+- Archivos multimedia → `media_volume`
+
+Si necesitas limpiar completamente los datos almacenados en estos volúmenes:
+
+```sh
+docker volume rm cheaf_test_tecnico_postgres_data cheaf_test_tecnico_static_volume cheaf_test_tecnico_media_volume
+```
+
+---
+
+### 🔄 **8. Recolectar Archivos Estáticos**
+Para que Nginx pueda servir correctamente los archivos estáticos:
+
+```sh
+docker-compose exec web python manage.py collectstatic --noinput
+docker-compose restart nginx
+```
+
+---
+
+### 📬 **9. Pruebas de Emails con MailHog**
+Si necesitas probar el envío de emails sin configurar un servidor real, **MailHog** estará corriendo en:
+
+📌 **Accede a MailHog desde el navegador:**  
+👉 [http://localhost:8025](http://localhost:8025)
+
+Aquí podrás ver todos los correos enviados desde la aplicación.
+
+---
+
+## **📌 Problemas Comunes y Soluciones**
+### ❌ **Error: "Could not connect to database"**
+Si la base de datos no está lista cuando Django intenta conectarse, usa este comando:
+
+```sh
+docker-compose exec web python manage.py wait_for_db
+```
+
+### ❌ **Error: "Could not connect to Redis"**
+Si Celery no se conecta a Redis, revisa si el servicio está corriendo:
+
+```sh
+docker-compose ps
+```
+
+Si Redis no está levantado, intenta reiniciarlo:
+
+```sh
+docker-compose up -d redis
+```
+
+Si el problema persiste, revisa los logs:
+
+```sh
+docker-compose logs redis
+```
+
+---
+
+## 🚀 **¡Listo para Desplegar!**
+Con esta configuración, puedes levantar y probar la aplicación en cualquier entorno sin preocuparte por instalar dependencias manualmente.
+
+---
+
+### **📌 Resumen de Comandos Útiles**
+| Acción | Comando |
+|---------|----------------------------|
+| **Construir contenedores** | `docker-compose build` |
+| **Levantar el proyecto** | `docker-compose up -d` |
+| **Ver logs de un contenedor** | `docker-compose logs <servicio>` |
+| **Ejecutar migraciones** | `docker-compose exec web python manage.py migrate` |
+| **Crear superusuario** | `docker-compose exec web python manage.py createsuperuser` |
+| **Detener los contenedores** | `docker-compose down` |
+| **Eliminar contenedores y volúmenes** | `docker-compose down -v` |
+| **Reconstruir solo un servicio** | `docker-compose build web && docker-compose up -d web` |
+| **Reiniciar Nginx** | `docker-compose restart nginx` |
+| **Acceder a MailHog** | `http://localhost:8025` |
+
+---
+
+### ✅ **¡Listo!**
+Con esto, tienes toda la información para **construir, ejecutar y depurar** tu proyecto en Docker. 🚀
+
+## **Próximos Pasos** 
 ✅ Configurar **CI/CD** para automatizar despliegues (definir servidor web).  
 
 ---
