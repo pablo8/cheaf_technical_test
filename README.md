@@ -27,6 +27,71 @@ cheaf_test_tecnico/
 │── xscripts/ # Scripts adicionales
 │── requirements.txt # Librerias del proyecto
 ```
+¡Sí, es totalmente posible y de hecho es una **buena práctica**! 🚀  
+Agregar una sección de **Tecnologías Utilizadas** ayuda a documentar las versiones exactas de herramientas y librerías, facilitando futuras actualizaciones y debugging.  
+
+---
+
+### **📌 Nueva Sección: Tecnologías Utilizadas**
+Puedes agregar esta sección al **README** justo después de la introducción o antes de la configuración del entorno.  
+
+---
+
+## **🛠 Tecnologías Utilizadas**
+Este proyecto utiliza las siguientes tecnologías y herramientas:
+
+### **📌 Backend**
+| Tecnología       | Versión  | Descripción |
+|-----------------|----------|-------------|
+| **Python**      | `3.10+`  | Lenguaje principal del backend. |
+| **Django**      | `5.1.6`  | Framework web en el que está basado el proyecto. |
+| **Django Rest Framework (DRF)** | `3.15.2` | Para construir la API REST. |
+
+### **📌 Base de Datos y Caché**
+| Tecnología       | Versión | Descripción |
+|-----------------|---------|-------------|
+| **PostgreSQL**  | `14+`   | Base de datos relacional. |
+| **Redis**       | `5.2.1` | Almacenamiento en caché y broker de mensajes. |
+
+### **📌 Mensajería y Tareas Asíncronas**
+| Tecnología       | Versión | Descripción |
+|-----------------|---------|-------------|
+| **Celery**      | `5.4.0` | Manejo de tareas asíncronas en el backend. |
+| **Redis**       | `5.2.1` | Usado como broker para Celery. |
+
+### **📌 Infraestructura y Despliegue**
+| Tecnología       | Versión          | Descripción |
+|-----------------|------------------|-------------|
+| **Docker**      | `24.4.0`        | Contenedores para facilitar la ejecución del proyecto. |
+| **Fly.io**      | `Última versión` | Plataforma de despliegue para producción. |
+| **GitHub Actions** | -                | CI/CD automatizado para despliegues. |
+
+### **📌 Otras Herramientas**
+| Tecnología       | Versión  | Descripción |
+|-----------------|----------|-------------|
+| **Gunicorn**    | `21.2.0` | Servidor WSGI para correr Django en producción. |
+
+---
+
+### **📌 ¿Cómo actualizar esta sección?**
+1. Para ver las versiones instaladas de paquetes en el entorno actual:
+   ```powershell
+   pip freeze
+   ```
+2. Para ver la versión de **Docker**:
+   ```powershell
+   docker --version
+   ```
+3. Para ver la versión de **Fly.io CLI**:
+   ```powershell
+   flyctl version
+   ```
+4. Para ver la versión de **Redis** (si se está ejecutando como contenedor en Docker):
+   ```powershell
+   docker exec -it redis redis-cli INFO server | Select-String version
+   ```
+
+---
 
 ## Instalación
 
@@ -717,8 +782,149 @@ Si estás ejecutando **Redis en Docker Desktop**, no puedes ejecutar Celery desd
 
 ---
 
-## **Próximos Pasos** 
-✅ Configurar **CI/CD** para automatizar despliegues (definir servidor web).  
+
+### **📌 Configuración de Fly.io en Windows**
+Este proyecto está configurado para desplegarse en **Fly.io**. A continuación, se detallan los pasos para instalar Fly.io, configurar la base de datos, ejecutar migraciones y hacer el despliegue.
+
+---
+
+## **1️⃣ Instalación de Fly.io en Windows**
+Ejecutar el siguiente comando en **PowerShell** (como administrador) para instalar Fly.io CLI:
+
+```powershell
+iwr https://fly.io/install.ps1 -useb | iex
+```
+
+Para verificar que se instaló correctamente:
+
+```powershell
+flyctl version
+```
+
+---
+
+## **2️⃣ Autenticarse en Fly.io**
+Para iniciar sesión en Fly.io, ejecutar:
+
+```powershell
+flyctl auth login
+```
+
+Esto abrirá el navegador para iniciar sesión con la cuenta de Fly.io.
+
+---
+
+## **3️⃣ Crear la Aplicación en Fly.io**
+Antes de ejecutar este comando, **es obligatorio estar en la raíz del proyecto**.
+
+```powershell
+flyctl launch
+```
+
+Durante el proceso, Fly.io pedirá:
+- **Nombre de la aplicación** (puedes aceptar el nombre generado o escribir uno personalizado).
+- **Región** (seleccionar la más cercana, por ejemplo, `iad` para EE.UU. o `gru` para Brasil).
+- **Configuración automática** de base de datos y otros servicios.
+
+Esto generará automáticamente el archivo **`fly.toml`**, que contiene la configuración de despliegue.
+
+---
+
+## **4️⃣ Crear una Base de Datos en Fly.io**
+Si el proyecto usa PostgreSQL, se puede crear con el siguiente comando:
+
+```powershell
+flyctl postgres create
+```
+
+Para asociar la base de datos a la aplicación:
+
+```powershell
+flyctl postgres attach --app <nombre-de-la-app>
+```
+
+Para verificar las variables de entorno disponibles en Fly.io:
+
+```powershell
+flyctl secrets list --app <nombre-de-la-app>
+```
+
+---
+
+## **5️⃣ Configurar el Token de Fly.io en GitHub**
+GitHub Actions necesita autenticarse en Fly.io para desplegar automáticamente la aplicación.  
+
+1. Obtener el token de Fly.io con:
+   ```powershell
+   flyctl auth token
+   ```
+2. **Copiar el token generado**.
+3. **Ir al repositorio en GitHub → "Settings" → "Secrets and variables" → "Actions".**
+4. **Crear un nuevo secreto llamado `FLY_API_TOKEN`** y pegar el valor copiado.
+
+---
+
+## **6️⃣ Configurar Archivos Estáticos en Django**
+Cuando `DEBUG = False`, Django **no sirve archivos estáticos automáticamente**. Para solucionarlo:
+
+1️⃣ **Ejecutar `collectstatic` en Fly.io para recopilar los archivos estáticos:**
+```powershell
+flyctl ssh console --app <nombre-de-la-app>
+```
+Luego, dentro de la terminal de Fly.io:
+```bash
+python manage.py collectstatic --noinput
+exit
+```
+
+2️⃣ **Configurar `fly.toml` para servir estáticos:**
+Abrir `fly.toml` y agregar dentro de `[http_service]`:
+
+```toml
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.routes]]
+    handle_path = "/static/*"
+    root = "/app/static/"
+```
+
+---
+
+## ** Desplegar la Aplicación**
+Para hacer el despliegue manualmente en Fly.io:
+
+```powershell
+flyctl deploy
+```
+
+Para abrir la aplicación en el navegador:
+
+```powershell
+flyctl open
+```
+
+Para ver los logs en tiempo real:
+
+```powershell
+flyctl logs --app <nombre-de-la-app>
+```
+
+---
+
+## **📌 Resumen Final**
+1️⃣ **Instalar Fly.io CLI** (`iwr https://fly.io/install.ps1 -useb | iex`).  
+2️⃣ **Autenticarse en Fly.io** (`flyctl auth login`).  
+3️⃣ **Crear la aplicación en Fly.io** (`flyctl launch`).  
+4️⃣ **Configurar PostgreSQL en Fly.io** (`flyctl postgres create`).  
+5️⃣ **Configurar el Token en GitHub Secrets (`FLY_API_TOKEN`).**  
+6️⃣ **Configurar archivos estáticos con WhiteNoise** (`pip install whitenoise`).  
+7️⃣ **Ejecutar `collectstatic` y modificar `fly.toml`**.  
+8️⃣ **Hacer `git push` y desplegar la aplicación (`flyctl deploy`).**  
 
 ---
 
