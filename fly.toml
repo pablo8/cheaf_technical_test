@@ -39,3 +39,7 @@ console_command = '/app/manage.py shell'
 [[statics]]
   guest_path = '/app/static'
   url_prefix = '/static/'
+
+[mounts]
+  source = "static_volume"
+  destination = "/app/static"
