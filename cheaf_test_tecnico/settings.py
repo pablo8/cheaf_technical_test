@@ -28,6 +28,7 @@ config = dotenv_values(BASE_DIR / ".env")
 SECRET_KEY = config["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
+LOCAL_ENV = False
 USING_DOCKER_CONFIG = False
 DEBUG = False
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'cheaf-test-tecnico.fly.dev']
@@ -227,8 +228,9 @@ USE_TZ = True
 # Archivos estáticos
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+# Config for statics in Fly.io
+STATIC_ROOT = os.path.join(BASE_DIR, "static") if LOCAL_ENV else os.path.join(BASE_DIR, "staticfiles")
+
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
