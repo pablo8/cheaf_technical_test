@@ -55,12 +55,6 @@ jobs:
           flyctl secrets set REDIS_URL="redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379"
           flyctl secrets set CELERY_BROKER_URL="redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379"
           flyctl secrets set CELERY_RESULT_BACKEND="redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379"
-          flyctl secrets set EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
-          flyctl secrets set EMAIL_HOST="mailhog"
-          flyctl secrets set EMAIL_PORT=1025
-          flyctl secrets set EMAIL_USE_TLS=False
-          flyctl secrets set EMAIL_USE_SSL=False
-          flyctl secrets set DEFAULT_FROM_EMAIL="noreply@example.com"
 
       - name: Deploy en Fly.io
         env:
