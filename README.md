@@ -7,6 +7,26 @@ la gestión de productos, alertas y endpoints protegidos.
 Actualmente, permite la creación de usuarios y la autenticación mediante JWT.
 
 ---
+## **Estructura del Proyecto**
+```
+cheaf_test_tecnico/
+│── manage.py
+│── .env  # Configuración de entorno
+│── env_template  # Template de configuración de entorno
+│── apps/
+│   ├── core/  # Modelo de usuario y autenticación
+│   ├── products/  # Modelo de productos y logica de negocio
+│   ├── alerts/  # Modelo de alertas y logica de negocio
+│── utils/  # Configuraciones adicionales
+│── xscripts/ # Scripts adicionales
+│── conftest.py # Archivo configuración tests
+│── pytest.ini/ # Archivo configuracion tests
+│── Dockerfile/ # Archivo configuracion de docker
+│── docker-compose.yml/ # Archivo configuracion de volumenes y servicios
+│── nginx.conf/ # Archivo configuracion de nginx (redireccionamiento de puerto para servir estaticos)
+│── xscripts/ # Scripts adicionales
+│── requirements.txt # Librerias del proyecto
+```
 
 ## Instalación
 
@@ -14,7 +34,10 @@ Actualmente, permite la creación de usuarios y la autenticación mediante JWT.
 Antes de comenzar, asegúrate de tener instalado:
 - **Python 3.8+**
 - **PostgreSQL**
-- **Virtualenv** (opcional pero recomendado)
+- **Docker Desktop (opcional)**
+- **Virtualenv** (recomendado)
+
+## ⚙️ Instalación y Configuración
 
 ### **Clonar el Repositorio**
 ```bash
@@ -53,14 +76,13 @@ DB_PORT=5432
 
 ---
 
-## **Configuración de la Base de Datos**
-### **Crear la Base de Datos en PostgreSQL**
+### **Base de Datos (PostgreSQL)**
 Accede a PostgreSQL y ejecuta:
 ```sql
 CREATE DATABASE cheaf;
 ```
 
-### **Aplicar Migraciones**
+### **Migraciones**
 ```bash
 python manage.py makemigrations core
 python manage.py migrate
@@ -68,20 +90,22 @@ python manage.py migrate
 
 ---
 
-## **Crear un Superusuario**
-Para acceder al **admin de Django**:
+## **Superusuario**
 ```bash
 python manage.py createsuperuser
 ```
-Sigue las instrucciones e ingresa un email, nombre y contraseña.
+
+## **Iniciar el servidor**
+```bash
+python manage.py runserver  # Iniciar servidor
+```
 
 ---
 
-## **Autenticación con JWT**
-Este proyecto usa **JSON Web Tokens (JWT)** para la autenticación de usuarios.
+## **🔐 Autenticación JWT**
 
-### **Obtener Access Token**
-**Endpoint:** `POST /api/token/`
+### **Obtener Token**
+**Endpoint:** `POST /auth/token/`
 ```json
 {
     "email": "testuser@example.com",
@@ -96,8 +120,8 @@ Este proyecto usa **JSON Web Tokens (JWT)** para la autenticación de usuarios.
 }
 ```
 
-### **Refrescar Access Token**
-**Endpoint:** `POST /api/token/refresh/`
+### **Refrescar Token**
+**Endpoint:** `POST /auth/token/refresh/`
 ```json
 {
     "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
@@ -111,7 +135,7 @@ Este proyecto usa **JSON Web Tokens (JWT)** para la autenticación de usuarios.
 ```
 
 ### **Verificar Token**
-**Endpoint:** `POST /api/token/verify/`
+**Endpoint:** `POST /auth/token/verify/`
 ```json
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
@@ -122,33 +146,9 @@ Este proyecto usa **JSON Web Tokens (JWT)** para la autenticación de usuarios.
 
 ---
 
-## **Estructura del Proyecto**
-```
-cheaf_test_tecnico/
-│── manage.py
-│── .env  # Configuración de entorno
-│── apps/
-│   ├── core/  # Modelo de usuario y autenticación
-│   ├── products/  # Próximamente
-│   ├── alerts/  # Próximamente
-│── utils/  # Configuraciones adicionales
-│── requirements.txt
-```
-
----
-
-## **Comandos ## **Comandos \u00dátiles**
-```bash
-python manage.py runserver  # Iniciar servidor
-python manage.py createsuperuser  # Crear superusuario
-python manage.py migrate  # Aplicar migraciones
-```
-
----
-
 ## **Carga de Datos de Prueba**
 
-Para facilitar las pruebas de la API, hemos creado **dos scripts** en la carpeta `xscripts/` que permiten limpiar la base de datos y cargar datos de prueba con `Faker`.  
+Para facilitar las pruebas de la API, se crearon **dos scripts** en la carpeta `xscripts/` que permiten limpiar la base de datos y cargar datos de prueba utilizando la libreria `Faker`.  
 
 ### **Limpieza de la Base de Datos**
 Antes de cargar datos nuevos, puedes limpiar la base de datos con:
@@ -206,8 +206,6 @@ Cada producto tiene **2 alertas asociadas**, por lo que la cantidad total de ale
        }
    }
    ```
-¡Claro! Aquí tienes la **sección de Celery completamente integrada en tu README**, con todos los comandos relevantes, incluyendo la configuración del worker, el uso de `pool=solo` en Windows, Celery Beat y la programación de tareas automáticas. 
-
 ---
 
 ## **🔄 Configuración y Uso de Celery**
@@ -251,7 +249,7 @@ app.autodiscover_tasks()
 
 📍 **En `apps/core/__init__.py` importa Celery para que Django lo reconozca:**
 
-```python
+```bash
 from .celery import app as celery_app
 
 __all__ = ("celery_app",)
@@ -279,7 +277,7 @@ Celery Beat se usa para programar tareas automáticas, como actualizar alertas y
 
 📍 **Añade Celery Beat a `INSTALLED_APPS` en `settings.py`:**
 
-```python
+```bash
 INSTALLED_APPS = [
     ...
     "django_celery_beat",
@@ -292,7 +290,7 @@ python manage.py migrate django_celery_beat
 ```
 
 📍 **En `apps/core/celery.py`, agrega la configuración de tareas programadas:**
-```python
+```bash
 from celery.schedules import crontab
 
 app.conf.beat_schedule = {
@@ -301,8 +299,8 @@ app.conf.beat_schedule = {
         "schedule": crontab(hour=0, minute=0),  # Ejecutar a la medianoche
     },
     "send_notifications_daily": {
-        "task": "apps.alerts.tasks.send_alert_notifications",
-        "schedule": crontab(hour=8, minute=0),  # Ejecutar a las 8 AM
+        "task": "apps.alerts.tasks.notify_products_before_expiration",
+        "schedule": crontab(hour=0, minute=0),  # Ejecutar a la medianoche
     },
 }
 ```
@@ -310,56 +308,6 @@ app.conf.beat_schedule = {
 📌 **Ejecutar Celery Beat en otra terminal para activar las tareas programadas:**
 ```bash
 celery -A apps.core beat --loglevel=info
-```
-
----
-
-### **📌 5️⃣ Lista de Tareas en Celery**
-📍 **En `apps/alerts/tasks.py`, define las tareas que se ejecutarán automáticamente:**
-
-#### **✅ 5.1 Tarea para actualizar las alertas**
-```python
-@shared_task
-def update_alerts():
-    """Tarea programada para actualizar los días de activación de alertas."""
-    today = now().date()
-    alerts = Alert.objects.filter(status=STATUS_ACTIVE_ID)
-
-    updated_alerts = 0
-    for alert in alerts:
-        alert.update_days()
-        alert.save()
-        updated_alerts += 1
-
-    return f"Updated {updated_alerts} alerts."
-```
-
-#### **✅ 5.2 Tarea para enviar notificaciones**
-```python
-@shared_task
-def send_alert_notifications():
-    """Tarea para notificar a los usuarios sobre productos próximos a caducar."""
-    today = now().date()
-    alerts_to_notify = Alert.objects.filter(activation_date__date=today, status=STATUS_ACTIVE_ID)
-
-    if not alerts_to_notify.exists():
-        return "No alerts to notify today."
-
-    for alert in alerts_to_notify:
-        # Simulación de emails de prueba
-        test_users = ["testuser1@example.com", "testuser2@example.com"]
-
-        send_mail(
-            f"📢 ¡Atención! El producto {alert.product.name} está por caducar",
-            f"El producto {alert.product.name} caduca el {alert.product.expiration_date.strftime('%d/%m/%Y')}.",
-            settings.DEFAULT_FROM_EMAIL,
-            test_users,
-        )
-
-        alert.status = STATUS_EXPIRED_ID
-        alert.save()
-
-    return f"Notified {alerts_to_notify.count()} alerts today."
 ```
 
 ---
@@ -424,10 +372,6 @@ celery -A apps.core call apps.alerts.tasks.update_alerts
 
 ---
 
-Aquí está la sección actualizada de **Mailhog y notificaciones con Celery** para agregar al **README**.
-
----
-
 ## **🔔 Configuración de Notificaciones por Correo con Mailhog**
 
 Para las notificaciones de productos por caducar, se ha configurado **Mailhog** como servidor de pruebas para envíos de correo.
@@ -458,59 +402,8 @@ DEFAULT_FROM_EMAIL = "noreply@cheaf.com"
 ---
 
 ### **2️⃣ Creación de la tarea de Celery para Notificaciones**
-Cuando un producto está a punto de vencer, se envía un correo electrónico a los usuarios de prueba (`is_staff=True`) y la alerta cambia de estado a **expirada**.
-
-📌 **Tarea de Celery (`apps/alerts/tasks.py`):**
-```python
-from django.core.mail import send_mail
-from django.conf import settings
-from celery import shared_task
-from apps.alerts.models import Alert
-from apps.core.models import User
-from utils.constants import STATUS_ACTIVE_ID, STATUS_EXPIRED_ID
-
-@shared_task
-def send_alert_notifications(alert_ids):
-    """
-    Tarea programada para enviar notificaciones a usuarios cuando una alerta vence
-    y actualizar el estado de la alerta a `STATUS_EXPIRED_ID`.
-    """
-    alerts = Alert.objects.filter(id__in=alert_ids, status=STATUS_ACTIVE_ID)
-
-    if not alerts.exists():
-        return "No hay alertas para notificar"
-
-    # Obtener usuarios de prueba
-    test_users = list(User.objects.filter(is_staff=True).values_list("email", flat=True))
-
-    if not test_users:
-        return "No hay usuarios de prueba para notificar"
-
-    # Construir el cuerpo del email
-    email_subject = "🔔 Productos por vencer"
-    email_body = "📢 Atención: Los siguientes productos están por caducar:\n\n"
-    email_body += "\n".join(
-        [f"- {alert.product.name} (Expira: {alert.activation_date.strftime('%d/%m/%Y')})" for alert in alerts]
-    )
-    email_body += "\n\n📌 Por favor, revisa los productos antes de su expiración."
-
-    # Enviar correo
-    try:
-        send_mail(
-            subject=email_subject,
-            message=email_body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=test_users,
-            fail_silently=False
-        )
-    except Exception as e:
-        return f"Error enviando notificaciones: {str(e)}"
-
-    # Actualizar estado de las alertas a expiradas
-    alerts.update(status=STATUS_EXPIRED_ID)
-
-    return f"Notificaciones enviadas correctamente a {len(test_users)} usuarios y {alerts.count()} alertas actualizadas."
-```
+Cuando un producto está a punto de vencer, se envía un correo electrónico a los usuarios de pruebas, 
+definidos genéricamente como `testusernotiX@test.com` y la alerta cambia de estado a **expirada**.
 
 ---
 
@@ -534,7 +427,6 @@ Accede a [http://localhost:8025](http://localhost:8025) y revisa los correos env
 ---
 
 ### **4️⃣ Programación Automática de la Tarea con Celery Beat**
-Si quieres ejecutar la tarea automáticamente cada 24 horas, usa **Celery Beat**.
 
 📌 **Instalar Celery Beat**
 ```bash
@@ -552,23 +444,6 @@ INSTALLED_APPS = [
 📌 **Migrar Base de Datos**
 ```bash
 python manage.py migrate django_celery_beat
-```
-
-📌 **Configurar la Tarea en `apps/alerts/tasks.py`**
-```python
-from celery.schedules import crontab
-from celery import Celery
-from apps.alerts.tasks import send_alert_notifications
-
-app = Celery("cheaf_test_tecnico")
-
-app.conf.beat_schedule = {
-    "send-alerts-daily": {
-        "task": "apps.alerts.tasks.send_alert_notifications",
-        "schedule": crontab(hour=0, minute=0),  # Ejecuta a medianoche
-        "args": (),
-    },
-}
 ```
 
 📌 **Ejecutar Celery Beat**
@@ -668,10 +543,6 @@ apps/
    - Cálculo de `days_to_activation` y `days_since_activation`.
    - Cambio de estado cuando una alerta vence (`STATUS_EXPIRED_ID`).
    - Envío de notificaciones cuando un producto está por caducar.
-
----
-
-Aquí tienes la sección de **Docker** lista para agregar al README. Está formateada en **Markdown** para que puedas copiarla y pegarla directamente.
 
 ---
 
@@ -807,41 +678,7 @@ Aquí podrás ver todos los correos enviados desde la aplicación.
 
 ---
 
-## **📌 Problemas Comunes y Soluciones**
-### ❌ **Error: "Could not connect to database"**
-Si la base de datos no está lista cuando Django intenta conectarse, usa este comando:
-
-```sh
-docker-compose exec web python manage.py wait_for_db
-```
-
-### ❌ **Error: "Could not connect to Redis"**
-Si Celery no se conecta a Redis, revisa si el servicio está corriendo:
-
-```sh
-docker-compose ps
-```
-
-Si Redis no está levantado, intenta reiniciarlo:
-
-```sh
-docker-compose up -d redis
-```
-
-Si el problema persiste, revisa los logs:
-
-```sh
-docker-compose logs redis
-```
-
----
-
-## 🚀 **¡Listo para Desplegar!**
-Con esta configuración, puedes levantar y probar la aplicación en cualquier entorno sin preocuparte por instalar dependencias manualmente.
-
----
-
-### **📌 Resumen de Comandos Útiles**
+### **📌 Comandos Útiles**
 | Acción | Comando |
 |---------|----------------------------|
 | **Construir contenedores** | `docker-compose build` |
@@ -855,12 +692,6 @@ Con esta configuración, puedes levantar y probar la aplicación en cualquier en
 | **Reiniciar Nginx** | `docker-compose restart nginx` |
 | **Acceder a MailHog** | `http://localhost:8025` |
 
----
-
-### ✅ **¡Listo!**
-Con esto, tienes toda la información para **construir, ejecutar y depurar** tu proyecto en Docker. 🚀
-
-¡Gracias por la aclaración! 🎯 **Estás haciendo un flujo manual para probar la simulación localmente** debido a la configuración de Redis en Docker Desktop. Voy a resumirlo bien para que quede documentado correctamente. 🚀
 
 ---
 
