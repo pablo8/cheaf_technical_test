@@ -32,11 +32,6 @@ Agregar una sección de **Tecnologías Utilizadas** ayuda a documentar las versi
 
 ---
 
-### **📌 Nueva Sección: Tecnologías Utilizadas**
-Puedes agregar esta sección al **README** justo después de la introducción o antes de la configuración del entorno.  
-
----
-
 ## **🛠 Tecnologías Utilizadas**
 Este proyecto utiliza las siguientes tecnologías y herramientas:
 
@@ -109,6 +104,13 @@ Antes de comenzar, asegúrate de tener instalado:
 git clone https://github.com/pablo8/cheaf_technical_test.git
 cd cheaf_test_tecnico
 ```
+
+### **🚀 Inicio Rapido 🚀**
+Una vez clonado el repositorio, el proyecto puede ser levantado mediante docker (tenes que tenerlo previamente instalado) usando el siguiente comando:
+```sh
+docker-compose up --build -d
+```
+---
 
 ### **Crear y Activar un Entorno Virtual**
 ```bash
