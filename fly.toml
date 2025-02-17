@@ -5,12 +5,12 @@
 
 app = 'cheaf-test-tecnico'
 primary_region = 'eze'
-console_command = '/code/manage.py shell'
+console_command = '/app/manage.py shell'
 
 [build]
 
 [deploy]
-  release_command = "sh -c 'echo Running collectstatic && python manage.py collectstatic --noinput && echo Running migrate && python manage.py migrate --noinput'"
+  release_command = "sh -c 'python manage.py collectstatic --noinput && python manage.py migrate'"
 
 [env]
   PORT = '8000'
@@ -37,5 +37,5 @@ console_command = '/code/manage.py shell'
   cpus = 1
 
 [[statics]]
-  guest_path = 'static'
+  guest_path = '/app/static'
   url_prefix = '/static/'
