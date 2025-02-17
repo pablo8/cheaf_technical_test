@@ -557,6 +557,7 @@ Antes de comenzar, asegúrate de tener instalado:
 
 - **[Docker Desktop](https://www.docker.com/products/docker-desktop)**
 - **[Docker Compose](https://docs.docker.com/compose/)** (Incluido en Docker Desktop)
+- **Variable (en settings) `USING_DOCKER_CONFIG = True` **
 
 ---
 
