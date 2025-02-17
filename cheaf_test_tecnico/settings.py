@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+
+import dj_database_url
 from dotenv.main import dotenv_values
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +28,7 @@ config = dotenv_values(BASE_DIR / ".env")
 SECRET_KEY = config["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-USING_DOCKER_CONFIG = True
+USING_DOCKER_CONFIG = False
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
@@ -151,22 +153,31 @@ WSGI_APPLICATION = 'cheaf_test_tecnico.wsgi.application'
 CLIENT_NAME = config["CLIENT_NAME"]
 
 # Database Configuration (Usando valores por defecto en caso de que no existan en el .env)
-if USING_DOCKER_CONFIG:
-    DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.postgresql")
-    DB_PORT = os.getenv("DB_PORT", "5432")
-    DB_NAME = os.getenv("DB_NAME", "cheaf")
-    DB_USER = os.getenv("DB_USER", "postgres")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "dba")
-    DB_HOST = os.getenv("DB_HOST", "db")
-else:
-    DB_ENGINE = config["DB_ENGINE"]
-    DB_PORT = config["DB_PORT"]
-    DB_NAME = config["DB_NAME"]
-    DB_USER = config["DB_USER"]
-    DB_PASSWORD = config["DB_PASSWORD"]
-    DB_HOST = config["DB_HOST"]
 
-DATABASES = {
+if "FLY_APP_NAME" in os.environ:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.getenv("DATABASE_URL"),
+            conn_max_age=600
+        )
+    }
+else:
+    if USING_DOCKER_CONFIG:
+        DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.postgresql")
+        DB_PORT = os.getenv("DB_PORT", "5432")
+        DB_NAME = os.getenv("DB_NAME", "cheaf")
+        DB_USER = os.getenv("DB_USER", "postgres")
+        DB_PASSWORD = os.getenv("DB_PASSWORD", "dba")
+        DB_HOST = os.getenv("DB_HOST", "db")
+    else:
+        DB_ENGINE = config["DB_ENGINE"]
+        DB_PORT = config["DB_PORT"]
+        DB_NAME = config["DB_NAME"]
+        DB_USER = config["DB_USER"]
+        DB_PASSWORD = config["DB_PASSWORD"]
+        DB_HOST = config["DB_HOST"]
+
+    DATABASES = {
        "default": {
         "ENGINE": DB_ENGINE,
         "PORT": DB_PORT,
@@ -174,8 +185,8 @@ DATABASES = {
         "USER": DB_USER,
         "PASSWORD": DB_PASSWORD,
         "HOST": DB_HOST
+        }
     }
-}
 
 
 # Password validation
