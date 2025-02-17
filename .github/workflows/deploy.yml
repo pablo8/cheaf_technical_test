@@ -23,13 +23,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Forzar que los archivos estáticos se guarden en /app/static/
-        run: |
-          mkdir -p /app/static
-        env:
-          DJANGO_SETTINGS_MODULE: "cheaf_test_tecnico.settings"
-          DEBUG: "False"
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      - name: Crear directorio para estáticos en `staticfiles/`
+        run: mkdir -p staticfiles
 
       - name: Ejecutar collectstatic
         run: |

@@ -37,7 +37,7 @@ console_command = '/app/manage.py shell'
   cpus = 1
 
 [[statics]]
-  guest_path = '/app/static'
+  guest_path = '/app/staticfiles'
   url_prefix = '/static/'
 
 [mounts]
