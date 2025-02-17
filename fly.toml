@@ -43,3 +43,11 @@ console_command = '/app/manage.py shell'
 [mounts]
   source = "static_volume"
   destination = "/app/static"
+
+[[services]]
+  internal_port = 1025
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 1025
+    handlers = ["tls"]
