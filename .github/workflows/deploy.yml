@@ -25,8 +25,8 @@ jobs:
 
       - name: Crear directorio para estáticos y modificar permisos
         run: |
-          mkdir -p staticfiles
-          chmod -R 777 staticfiles
+          mkdir -p static
+          chmod -R 777 static
         env:
           DJANGO_SETTINGS_MODULE: "cheaf_test_tecnico.settings"
           DEBUG: "False"
