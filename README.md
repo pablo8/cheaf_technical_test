@@ -564,6 +564,7 @@ Antes de comenzar, asegúrate de tener instalado:
 ### 🏗 **2. Construcción de los Contenedores**
 Para construir los contenedores y preparar la aplicación, ejecuta:
 
+
 ```sh
 docker-compose build
 ```
