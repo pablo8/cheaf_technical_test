@@ -16,7 +16,7 @@ class ProductSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_alerts(obj):
         try:
-            return AlertLiteSerializer(instance=obj.alert_set.all(), many=True).data
+            return AlertLiteSerializer(instance=obj.alerts.all(), many=True).data
         except:
             return None
 
