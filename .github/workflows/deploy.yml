@@ -48,6 +48,13 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: flyctl auth token ${{ secrets.FLY_API_TOKEN }}
 
+      - name: Configurar variables de entorno en Fly.io
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          flyctl secrets set LOCAL_ENV=True
+          flyctl secrets set REDIS_URL="redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379"
+
       - name: Deploy en Fly.io
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
