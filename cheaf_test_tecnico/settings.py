@@ -29,7 +29,7 @@ SECRET_KEY = config["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 USING_DOCKER_CONFIG = False
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 # Define una lista de dominios en los que django "confía" para recibir solicitudes que incluyen
