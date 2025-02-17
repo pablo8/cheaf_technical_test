@@ -5,7 +5,7 @@
 
 app = 'cheaf-test-tecnico'
 primary_region = 'eze'
-console_command = '/code/manage.py shell'
+console_command = '/app/manage.py shell'
 
 [build]
 
@@ -37,5 +37,5 @@ console_command = '/code/manage.py shell'
   cpus = 1
 
 [[statics]]
-  guest_path = '/app/static'
+  guest_path = 'static'
   url_prefix = '/static/'
