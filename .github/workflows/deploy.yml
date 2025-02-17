@@ -54,6 +54,8 @@ jobs:
         run: |
           flyctl secrets set LOCAL_ENV=False
           flyctl secrets set REDIS_URL="redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379"
+          flyctl secrets set CELERY_BROKER_URL="redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379"
+          flyctl secrets set CELERY_RESULT_BACKEND="redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379"
 
       - name: Deploy en Fly.io
         env:
