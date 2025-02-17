@@ -27,7 +27,7 @@ jobs:
         run: |
           python manage.py collectstatic --noinput --verbosity 3
         env:
-          DJANGO_SETTINGS_MODULE: "tu_proyecto.settings"
+          DJANGO_SETTINGS_MODULE: "cheaf_test_tecnico.settings"
           DEBUG: "False"
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
