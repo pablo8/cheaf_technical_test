@@ -244,26 +244,30 @@ MEDIA_ROOT ="/app/media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# CELERY CONFIGURATION
+if LOCAL_ENV:
+    if USING_DOCKER_CONFIG:
+        REDIS_URL = "redis://redis:6379/0"
+        CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", REDIS_URL)
+        CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", REDIS_URL)
+    else:
+        REDIS_URL = "redis://localhost:6379/0"
+        CELERY_BROKER_URL = REDIS_URL
+        CELERY_RESULT_BACKEND = REDIS_URL
+else:
+    REDIS_URL = "redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379"
+    CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379")
+    CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379")
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
+        "LOCATION": REDIS_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }
-# CELERY CONFIGURATION
-if LOCAL_ENV:
-    if USING_DOCKER_CONFIG:
-        CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
-        CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
-    else:
-        CELERY_BROKER_URL = "redis://localhost:6379/0"
-        CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
-else:
-    CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379")
-    CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://default:8d5f808c70664025a15a1d7b22d55719@fly-cheaf-test-tecnico-redis.upstash.io:6379")
 
 
 CELERY_ACCEPT_CONTENT = ['json']
