@@ -107,9 +107,48 @@ cd cheaf_test_tecnico
 
 ### **🚀 Inicio Rapido 🚀**
 Una vez clonado el repositorio, el proyecto puede ser levantado mediante docker (tenes que tenerlo previamente instalado) usando el siguiente comando:
+
+Tener encuenta las siguientes configuraciones de variables a nivel de settings del proyecto
+```sh
+# En ambiente local o con docker local (docker desktop (ejemplo))
+LOCAL_ENV = True
+# En servidores como Fly.io u otros
+LOCAL_ENV = False
+# En ambiente local (sin usar docker)
+USING_DOCKER_CONFIG = False
+# En ambiente local (usando docker)
+USING_DOCKER_CONFIG = False
+# En entornos de desarrollo 
+DEBUG = True
+# En entornos de producción
+DEBUG = False
+```
+
 ```sh
 docker-compose up --build -d
 ```
+### Prueba de notificaciones
+Además del inicio rápido, es posible probar la simulación de notificaciones por vencimiento de alertas y productos con
+el script `run_simulation_notifications.py` que se encuentra en la raiz del proyecto, ejecutando desde la terminal
+```sh
+python run_simulation_notifications.py
+```
+Para esto las variables de configuración deben estar de la siguiente manera
+```sh
+LOCAL_ENV = True
+USING_DOCKER_CONFIG = False
+DEBUG = True
+```
+Ademas de tener inicializado el redis, ya sea en docker o en el ambiente local
+```sh
+   docker exec -it redis-server
+```
+Por ultimo se pueden visualizar los "emails" de notificaciones usando mailhog para eso bajamos la imagen
+e ingresamos a la url que tiene definida por defecto http://localhost:8025/
+```sh
+docker run --name mailhog -p 1025:1025 -p 8025:8025 mailhog/mailhog
+```
+
 ---
 
 ### **Crear y Activar un Entorno Virtual**

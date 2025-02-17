@@ -28,8 +28,12 @@ config = dotenv_values(BASE_DIR / ".env")
 SECRET_KEY = config["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-LOCAL_ENV = False
+
+# In local machine or local docker in local False | True for deploy on (Fly.io, or other production enviroment)
+LOCAL_ENV = True
+# In local machine False | True docker in local
 USING_DOCKER_CONFIG = False
+# In dev env True | False in production
 DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'cheaf-test-tecnico.fly.dev']
 
