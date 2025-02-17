@@ -10,7 +10,11 @@ console_command = '/code/manage.py shell'
 [build]
 
 [deploy]
-  release_command = 'mkdir -p /code/static; python manage.py migrate --noinput; python manage.py collectstatic --noinput'
+  release_command = """
+  mkdir -p /code/static
+  python manage.py migrate --noinput
+  python manage.py collectstatic --noinput
+  """
 
 [env]
   PORT = '8000'
