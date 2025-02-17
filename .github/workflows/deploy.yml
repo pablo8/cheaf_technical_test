@@ -13,14 +13,20 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
-      - name: Configurar Fly.io CLI
+      - name: Instalar Fly.io CLI y configurar PATH
         run: |
           curl -L https://fly.io/install.sh | sh
-          export FLYCTL_INSTALL="/home/runner/.fly"
-          export PATH="$FLYCTL_INSTALL/bin:$PATH"
+          echo "$HOME/.fly/bin" >> $GITHUB_PATH  # Agrega Fly.io al PATH
+
+      - name: Verificar instalación de Fly.io
+        run: flyctl version
 
       - name: Autenticarse en Fly.io
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: flyctl auth token ${{ secrets.FLY_API_TOKEN }}
 
       - name: Deploy en Fly.io
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: FLY_API_TOKEN=${{ secrets.FLY_API_TOKEN }} flyctl deploy --remote-only
