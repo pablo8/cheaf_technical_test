@@ -30,11 +30,11 @@ SECRET_KEY = config["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 
 # In local machine or local docker in local False | True for deploy on (Fly.io, or other production enviroment)
-LOCAL_ENV = True
+LOCAL_ENV = False
 # In local machine False | True docker in local
 USING_DOCKER_CONFIG = False
 # In dev env True | False in production
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'cheaf-test-tecnico.fly.dev']
 
 # Define una lista de dominios en los que django "confía" para recibir solicitudes que incluyen
