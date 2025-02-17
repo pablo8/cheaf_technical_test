@@ -23,10 +23,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Crear directorio para estáticos y modificar permisos
+      - name: Forzar que los archivos estáticos se guarden en /app/static/
         run: |
-          mkdir -p static
-          chmod -R 777 /app/static
+          mkdir -p /app/static
         env:
           DJANGO_SETTINGS_MODULE: "cheaf_test_tecnico.settings"
           DEBUG: "False"
